@@ -75,7 +75,7 @@ export class DevEcsClusterStack extends cdk.Stack {
         });
 
         // ALB Listener
-        const listenerPort80 = alb.addListener('Listener-80', {
+        alb.addListener('Listener-80', {
             port: 80,
             open: false,
             /**
