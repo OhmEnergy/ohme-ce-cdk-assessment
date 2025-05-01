@@ -21,7 +21,7 @@ export class DevEcsClusterStack extends cdk.Stack {
 
         // Security Group -> Application Load Balancer SG
         const albSg = new ec2.SecurityGroup(this, 'ALB-SG', {
-            securityGroupName: 'ohme-assessment-alb-dev-security-group',
+            securityGroupName: 'ohme-assessment-dev-alb-security-group',
             description:
                 'The public facing security group for the application load balancer.',
             vpc: vpc,
@@ -31,38 +31,37 @@ export class DevEcsClusterStack extends cdk.Stack {
         // ALB Inbound Traffic
         albSg.addIngressRule(
             ec2.Peer.ipv4('0.0.0.0/0'),
-            ec2.Port.tcp(80),
-            'Allow all inbound from HTTPS 80',
+            ec2.Port.allTcp(),
+            'Allow all inbound traffic',
         );
 
         // ALB Outbound Traffic
         albSg.addEgressRule(
             ec2.Peer.ipv4('0.0.0.0/0'),
             ec2.Port.allTcp(),
-            'Allow all outbound to ASG',
+            'Allow all outbound traffic.',
         );
 
         // Security Group -> Auto Scaling Group SG
         const asgSg = new ec2.SecurityGroup(this, 'ASG-SG', {
-            securityGroupName: 'ohme-assessment-asg-dev-security-group',
+            securityGroupName: 'ohme-assessment-dev-asg-security-group',
             description: 'The security group for the auto scaling group.',
             vpc: vpc,
             allowAllOutbound: false,
         });
-        asgSg.node.addDependency(albSg);
 
         // ASG Inbound Traffic
         asgSg.addIngressRule(
             ec2.Peer.ipv4('0.0.0.0/0'),
             ec2.Port.allTcp(),
-            'Allow all inbound from ALB.',
+            'Allow all inbound traffic',
         );
 
         // ASG Outbound Traffic
         asgSg.addEgressRule(
             ec2.Peer.ipv4('0.0.0.0/0'),
             ec2.Port.allTcp(),
-            'Allow all outbound to to the internet.',
+            'Allow all outbound traffic.',
         );
 
         // Application Load Balancer
